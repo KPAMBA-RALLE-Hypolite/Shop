@@ -1,13 +1,12 @@
 package com.pkfokam.Shop.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.util.List;
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
@@ -26,4 +25,12 @@ public class Product {
     
     @OneToMany(mappedBy = "product", orphanRemoval = true, cascade = CascadeType.ALL)
     private List<Image> images;
+
+    public Product(String name, Category category, String description, String brand, BigDecimal price) {
+        this.name = name;
+        this.description = description;
+        this.brand = brand;
+        this.price = price;
+        this.category = category;
+    }
 }
