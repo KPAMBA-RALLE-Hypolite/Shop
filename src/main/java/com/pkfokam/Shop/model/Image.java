@@ -15,6 +15,8 @@ public class Image {
     private String name;
     private String url;
     private String altText;
+    @Lob
+    private byte[] data;
     
     @ManyToOne
     @JoinColumn(name = "product_id")
