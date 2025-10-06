@@ -3,6 +3,7 @@ package com.pkfokam.Shop.service.product;
 import com.pkfokam.Shop.model.Category;
 import com.pkfokam.Shop.model.Product;
 import com.pkfokam.Shop.requests.AddNewProductRequest;
+import com.pkfokam.Shop.requests.UpdateProductRequest;
 
 import java.util.List;
 
@@ -11,8 +12,11 @@ public interface IProductService {
     Product addProduct(AddNewProductRequest productRequest);
 
     //mise a jour d'un produit
+
     void updateProduct(Product product, Long productId);
-    
+
+    Product updateProduct(UpdateProductRequest product, Long productId);
+
     //suppression d'un produit
     void deleteProduct(Long productId);
     

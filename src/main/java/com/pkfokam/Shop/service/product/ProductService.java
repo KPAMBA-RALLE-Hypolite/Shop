@@ -3,36 +3,81 @@ package com.pkfokam.Shop.service.product;
 import com.pkfokam.Shop.exceptions.ProductNotFoundException;
 import com.pkfokam.Shop.model.Category;
 import com.pkfokam.Shop.model.Product;
+import com.pkfokam.Shop.repository.CategoryRepository;
 import com.pkfokam.Shop.repository.ProductRepository;
 import com.pkfokam.Shop.requests.AddNewProductRequest;
+import com.pkfokam.Shop.requests.UpdateProductRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class ProductService implements IProductService {
     private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
 
+    /**
+     * Ajouter un produit
+     * - Si la catégorie existe déjà, on la réutilise
+     * - Sinon, on la crée puis on l’associe au produit
+     */
     @Override
     public Product addProduct(AddNewProductRequest productRequest) {
-        return null; // TODO: implémenter
-    }
+        // Vérifier si la catégorie existe
+        Category category = categoryRepository.findByName(productRequest.getCategory().getName())
+                .orElseGet(() -> {
+                    Category newCategory = new Category();
+                    newCategory.setName(productRequest.getCategory().getName());
+                    return categoryRepository.save(newCategory);
+                });
 
-    private Product createProduct(AddNewProductRequest productRequest, Category category) {
-        return new Product(
+        // Créer le produit
+        Product product = new Product(
                 productRequest.getName(),
                 category,
                 productRequest.getBrand(),
                 productRequest.getDescription(),
                 productRequest.getPrice()
         );
+
+        return productRepository.save(product);
     }
 
     @Override
     public void updateProduct(Product product, Long productId) {
-        // TODO: implémenter
+
+    }
+
+    /**
+     * Mettre à jour un produit existant
+     * - On vérifie que le produit existe
+     * - On met à jour ses champs
+     * - On sauvegarde
+     */
+    @Override
+    public Product updateProduct(UpdateProductRequest request, Long productId) {
+        Product existingProduct = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("Product with id " + productId + " not found"));
+
+        // Mettre à jour les champs
+        existingProduct.setName(request.getName());
+        existingProduct.setBrand(request.getBrand());
+        existingProduct.setDescription(request.getDescription());
+        existingProduct.setPrice(request.getPrice());
+
+        // Vérifier si la catégorie existe
+        Category category = categoryRepository.findByName(request.getCategory().getName())
+                .orElseGet(() -> {
+                    Category newCategory = new Category();
+                    newCategory.setName(request.getCategory().getName());
+                    return categoryRepository.save(newCategory);
+                });
+
+        existingProduct.setCategory(category);
+
+        return productRepository.save(existingProduct);
     }
 
     @Override
@@ -86,7 +131,6 @@ public class ProductService implements IProductService {
 
     @Override
     public List<Product> getProductsByCategoryAndBrandAndName(String category, String brandName, String name) {
-        // tu peux chaîner les trois critères
         return productRepository.findByCategory_NameAndBrandAndName(category, brandName, name);
     }
 
@@ -95,4 +139,3 @@ public class ProductService implements IProductService {
         return productRepository.countByBrandAndName(brandName, name);
     }
 }
-

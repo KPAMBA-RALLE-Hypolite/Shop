@@ -19,7 +19,7 @@ public class Product {
     private  String brand;
     private  String description;
     
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "category_id")
     private Category category;
     
@@ -28,9 +28,10 @@ public class Product {
 
     public Product(String name, Category category, String description, String brand, BigDecimal price) {
         this.name = name;
+        this.category = category;
         this.description = description;
         this.brand = brand;
         this.price = price;
-        this.category = category;
+
     }
 }
